@@ -36,6 +36,10 @@
 - name: Install Arduino IDE.
   become: no
   command: "{{ arduino_download_directory }}/arduino-{{ arduino_version }}/install.sh"
+  # Cheating a bit and chaining the install.sh logic with directory extraction,
+  # to maintain idempotence.
+  args:
+    creates: "{{ arduino_download_directory }}/arduino-{{ arduino_version }}"
 
 - name: Installs Arduino helper scripts.
   become: yes
