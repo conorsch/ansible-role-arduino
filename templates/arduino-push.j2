@@ -1,0 +1,17 @@
+#!/bin/bash
+# {{ ansible_managed }}
+set -e
+
+
+# Ensure sketchfile is provided as an argument. This is the code file
+# that will be compiled and pushed to the Arduino board.
+if [[ -z "$1" ]]; then
+    echo "Usage: $0 <sketchfile>"
+    exit 1
+fi
+
+# Declare path to Arduino binary. Will change according to Arduino version use.
+ARDUINO_BINARY="/opt/arduino/arduino-{{ arduino_version }}/arduino"
+
+# Push code file to Arduino board
+$ARDUINO_BINARY --port "{{ arduino_port }}" --upload "$1"

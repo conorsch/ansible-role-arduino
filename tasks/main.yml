@@ -1,0 +1,50 @@
+---
+- name: Create Arduino download directory.
+  become: yes
+  file:
+    state: directory
+    path: "{{ arduino_download_directory }}"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Download Arduino IDE and checksum files.
+  become: yes
+  get_url:
+    url: "{{ item }}"
+    dest: "{{ arduino_download_directory }}/{{ item|basename }}"
+  with_items:
+    - "{{ arduino_ide_url }}"
+    - "{{ arduino_ide_checksums_url }}"
+
+# The Arduino project does not provide PGP signatures for the checksum file,
+# so we're stuck trusting HTTPS for file integrity.
+- name: Verify checksums on downloaded files.
+  command: sha512sum --check --ignore-missing {{ arduino_ide_checksums_url|basename }}
+  changed_when: false
+  args:
+    chdir: "{{ arduino_download_directory }}"
+
+- name: Extract Arduino archive.
+  become: yes
+  unarchive:
+    src: "{{ arduino_download_directory }}/{{ arduino_ide_url|basename }}"
+    dest: "{{ arduino_download_directory }}/"
+    remote_src: yes
+    creates: "{{ arduino_download_directory }}/arduino-{{ arduino_version }}"
+
+- name: Install Arduino IDE.
+  become: no
+  command: "{{ arduino_download_directory }}/arduino-{{ arduino_version }}/install.sh"
+
+- name: Installs Arduino helper scripts.
+  become: yes
+  template:
+    src: "{{ item }}"
+    dest: "/usr/local/bin/{{ item.rstrip('.j2') }}"
+    mode: "0755"
+    owner: root
+    group: root
+  with_items:
+    - arduino-push.j2
+    - arduino-verify.j2

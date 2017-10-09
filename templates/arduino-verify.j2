@@ -1,0 +1,17 @@
+#!/bin/bash
+# {{ ansible_managed }}
+set -e
+
+
+# Ensure sketchfile is provided as an argument. This is the code file
+# that will be compiled and its results reported.
+if [[ -z "$1" ]]; then
+    echo "Usage: $0 <sketchfile>"
+    exit 1
+fi
+
+# Declare path to Arduino binary. Will change according to Arduino version use.
+ARDUINO_BINARY="/opt/arduino/arduino-{{ arduino_version }}/arduino"
+
+# Build and verify code file without pushing to board.
+$ARDUINO_BINARY --verify "$1"
