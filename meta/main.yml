@@ -1,0 +1,16 @@
+---
+galaxy_info:
+  author: Conor Schaefer (@conorsch)
+  description: Installs Arduino IDE
+  license: MIT
+  min_ansible_version: 2.3
+  platforms:
+    - name: Debian
+      versions:
+        - stretch
+  galaxy_tags:
+    - arduino
+    - development
+    - ide
+
+dependencies: []
